@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6554d9">
+<meta name="description" content="FreeNotes Studio — offline-first notes, sketching and sync.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FreeNotes Pro"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>FreeNotes Studio Pro</title>
+<style>
+:root{--bg:#f6f5fb;--panel:#fff;--ink:#252238;--muted:#77758b;--line:#e9e6f2;--brand:#6554d9;--brand2:#eeeaff;--shadow:0 14px 36px #34266a0d;--radius:22px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #a69aff;outline-offset:2px}
+.app{max-width:1380px;margin:auto;min-height:100dvh;display:grid;grid-template-columns:245px minmax(0,1fr)}
+.sidebar{background:#fff;border-right:1px solid var(--line);padding:25px 16px;display:flex;flex-direction:column;gap:25px;min-height:100dvh;position:sticky;top:0;height:100dvh}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px;font-weight:850;font-size:1.15rem;letter-spacing:-.04em}.brand-icon{width:40px;height:40px;background:linear-gradient(135deg,#7667ef,#5442c4);color:white;border-radius:14px;display:grid;place-items:center;font-size:22px;box-shadow:0 8px 18px #6554d933}
+.side-label{font-size:.68rem;letter-spacing:.13em;color:#a09bb3;font-weight:850;padding:0 12px;text-transform:uppercase}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#77738b;padding:12px 13px;text-align:left;border-radius:13px;display:flex;align-items:center;gap:12px;font-weight:650}.nav button.active,.nav button:hover{background:var(--brand2);color:var(--brand)}.nav .glyph{width:21px;text-align:center;font-size:18px}
+.side-bottom{margin-top:auto;display:grid;gap:12px}.offline-card{background:linear-gradient(145deg,#f0edff,#faf8ff);border:1px solid #e5dfff;border-radius:17px;padding:14px;font-size:.8rem;color:#635a91;line-height:1.5}.offline-card strong{display:block;color:#3c326f;margin-bottom:4px}.profile{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:15px;min-width:0}.avatar{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;background:#e7e2ff;color:#5747c5;font-weight:850}.profile-info{min-width:0;flex:1}.profile-info strong,.profile-info small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.profile-info strong{font-size:.83rem}.profile-info small{font-size:.72rem;color:var(--muted);margin-top:3px}
+main{min-width:0;padding:28px clamp(16px,3vw,42px) 100px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:15px}.mobile-brand{display:none}.top-actions{display:flex;align-items:center;gap:9px}.icon-btn{border:1px solid var(--line);background:#fff;width:43px;height:43px;border-radius:14px;display:grid;place-items:center;color:var(--ink);font-size:18px}.primary{border:0;background:var(--brand);color:#fff;border-radius:14px;padding:12px 17px;font-weight:800;box-shadow:0 7px 16px #6554d926}.secondary{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:13px;padding:10px 13px;font-weight:700}.hero{margin:28px 0 24px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.eyebrow{font-size:.73rem;text-transform:uppercase;letter-spacing:.14em;font-weight:850;color:var(--brand)}h1{font-size:clamp(1.9rem,4vw,2.7rem);line-height:1.06;letter-spacing:-.06em;margin:8px 0 10px}.hero p{margin:0;color:var(--muted);line-height:1.5}.hero-art{width:145px;height:115px;flex:none;border-radius:25px;background:linear-gradient(145deg,#e5e0ff,#f9dff0);position:relative;overflow:hidden}.hero-art:before,.hero-art:after{content:"";position:absolute;border-radius:18px;transform:rotate(-13deg);box-shadow:0 10px 22px #4e3ba01b}.hero-art:before{background:#fff;width:75px;height:91px;left:28px;top:18px}.hero-art:after{background:#a99bff;width:67px;height:83px;left:58px;top:7px;opacity:.9}.spark{position:absolute;z-index:2;font-size:25px;color:#6554d9;right:16px;bottom:16px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:26px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 17px;box-shadow:var(--shadow)}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.8rem}.stat-icon{background:#f0edff;color:var(--brand);width:30px;height:30px;border-radius:10px;display:grid;place-items:center}.stat strong{display:block;font-size:1.55rem;letter-spacing:-.04em;margin-top:7px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:25px 0 13px}.section-head h2{font-size:1.08rem;margin:0;letter-spacing:-.03em}.search{position:relative;min-width:190px;max-width:280px;flex:1}.search span{position:absolute;left:13px;top:10px;color:#9993ac}.search input{width:100%;border:1px solid var(--line);background:#fff;border-radius:13px;padding:10px 12px 10px 36px;outline:none}
+.filters{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px}.filters button{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:8px 13px;font-size:.82rem}.filters button.active{background:var(--brand2);border-color:#d8d0ff;color:var(--brand);font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.note{border:1px solid #00000008;border-radius:20px;padding:17px 16px;min-height:190px;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:10px;position:relative;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s;overflow:hidden}.note:hover{transform:translateY(-3px);box-shadow:0 16px 32px #34266a15}.note h3{font-size:1rem;line-height:1.35;margin:0;padding-right:22px;overflow-wrap:anywhere}.note p{font-size:.84rem;line-height:1.5;margin:0;color:#5f5b6e;display:-webkit-box;line-clamp:4;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere}.note-meta{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:8px;color:#79748a;font-size:.72rem}.note .pin{position:absolute;right:14px;top:14px;color:#6554d9}.drawing-thumb{height:40px;border-radius:10px;background:#ffffff8c;display:flex;align-items:center;justify-content:center;color:#7468bb;font-size:.78rem;font-weight:700}.empty{grid-column:1/-1;text-align:center;background:#fff;border:1px dashed #dcd6ed;border-radius:22px;padding:44px 15px}.empty .emoji{font-size:2.4rem}.empty h3{margin:10px 0 6px}.empty p{margin:0;color:var(--muted);font-size:.88rem}
+.fab{position:fixed;right:25px;bottom:24px;z-index:5;display:flex;align-items:center;gap:9px;border:0;border-radius:18px;background:var(--brand);color:#fff;padding:15px 21px;font-weight:850;box-shadow:0 10px 30px #6554d955}.fab span{font-size:22px}
+.overlay{position:fixed;inset:0;z-index:20;background:#17122b7a;display:none;align-items:center;justify-content:center;padding:18px}.overlay.show{display:flex}.modal{width:min(790px,100%);max-height:94dvh;overflow:auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 25px 80px #1b153b40}.modal.wide{width:min(1000px,100%)}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.modal-head h2{margin:0;font-size:1.15rem;letter-spacing:-.03em}.close{border:0;background:#f4f2fa;border-radius:11px;width:38px;height:38px;font-size:21px;color:#625c76}.field{width:100%;border:1px solid var(--line);background:#fbfaff;border-radius:13px;padding:12px 13px;outline:none;color:var(--ink);margin-bottom:11px}.field:focus{border-color:#a59aff;box-shadow:0 0 0 3px #6554d91a}#editTitle{font-size:1.2rem;font-weight:800}#editBody{min-height:130px;line-height:1.6;resize:vertical}.toolrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:5px 0 12px}.toolrow label{font-size:.82rem;color:var(--muted);display:flex;align-items:center;gap:7px}.toolrow input[type=color]{width:38px;height:34px;border:1px solid var(--line);border-radius:9px;padding:2px;background:white}.toolrow input[type=checkbox]{accent-color:var(--brand)}.editor-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.danger{color:#b42318;background:#fff5f4;border:1px solid #f2d2cf;border-radius:12px;padding:10px 12px;font-weight:700}.editor-actions-right{display:flex;gap:8px;margin-left:auto}
+.canvas-wrap{border:1px solid var(--line);background:#fff;border-radius:16px;overflow:hidden;position:relative}.canvas-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px;background:#faf9ff;border-bottom:1px solid var(--line)}.canvas-tools{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.canvas-tools button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;font-size:.8rem}.canvas-tools button.active{background:var(--brand2);border-color:#d6ceff;color:var(--brand)}.canvas-tools input[type=color]{width:34px;height:32px;border:0;padding:0;background:transparent}.canvas-tools input[type=range]{width:75px}.canvas{display:block;width:100%;height:290px;touch-action:none;background-color:#fff;background-image:radial-gradient(#e8e5f2 1px,transparent 1px);background-size:18px 18px}
+.statusline{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:7px}.dot{width:7px;height:7px;background:#1caa70;border-radius:50%;display:inline-block}.notice{background:#f6f3ff;border:1px solid #e6dfff;color:#62568e;padding:12px 13px;border-radius:13px;font-size:.83rem;line-height:1.5;margin:12px 0}.form-switch{border:0;background:transparent;color:var(--brand);font-weight:750;padding:10px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.toast{position:fixed;z-index:50;left:50%;bottom:90px;transform:translateX(-50%);background:#28233b;color:white;padding:12px 16px;border-radius:13px;box-shadow:var(--shadow);font-size:.85rem;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100vw - 28px);text-align:center}.toast.show{opacity:1}
+.mobile-nav{display:none}
+@media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-art{width:115px;height:100px}}
+@media(max-width:720px){.app{display:block}.sidebar{display:none}.mobile-nav{display:flex;position:fixed;z-index:8;bottom:0;left:0;right:0;padding:8px 8px calc(8px + env(safe-area-inset-bottom));background:#ffffffed;backdrop-filter:blur(18px);border-top:1px solid var(--line);justify-content:space-around;gap:3px}.mobile-nav button{border:0;background:transparent;color:var(--muted);display:grid;place-items:center;gap:3px;font-size:.66rem;padding:5px 12px;border-radius:12px;min-width:58px}.mobile-nav button.active{color:var(--brand);background:var(--brand2)}.mobile-nav b{font-size:19px;font-weight:500}main{padding:17px 15px 115px}.mobile-brand{display:flex;align-items:center;gap:8px;font-weight:850;letter-spacing:-.04em}.mobile-brand .brand-icon{width:34px;height:34px;border-radius:12px}.topbar{gap:8px}.top-actions{gap:6px}.top-actions .icon-btn{width:39px;height:39px}.top-actions .primary{padding:10px 12px}.hero{margin:24px 0 19px;align-items:center}.hero-art{width:85px;height:80px;border-radius:19px}.hero-art:before{width:48px;height:61px;left:15px;top:14px}.hero-art:after{width:45px;height:56px;left:34px;top:8px}.spark{right:8px;bottom:8px;font-size:19px}.stats{gap:8px;margin-bottom:22px}.stat{padding:12px;border-radius:15px}.stat-top{font-size:.69rem}.stat-icon{width:25px;height:25px}.stat strong{font-size:1.35rem}.section-head{align-items:flex-start;flex-wrap:wrap}.search{min-width:100%;max-width:none;order:2}.grid{gap:10px}.note{min-height:170px;padding:14px 13px;border-radius:17px}.note h3{font-size:.94rem}.note p{font-size:.8rem;line-clamp:4;-webkit-line-clamp:4}.fab{right:16px;bottom:calc(78px + env(safe-area-inset-bottom));padding:13px 17px;border-radius:17px}.overlay{align-items:flex-end;padding:0}.modal,.modal.wide{width:100%;max-height:94dvh;border-radius:24px 24px 0 0;padding:18px 15px calc(17px + env(safe-area-inset-bottom))}.canvas{height:260px}.form-grid{grid-template-columns:1fr}.toast{bottom:calc(145px + env(safe-area-inset-bottom))}}
+@media(max-width:370px){.hero-art{display:none}.grid{gap:8px}.note{padding:12px;min-height:158px}.stat{padding:10px}.stat-top{font-size:.64rem}.top-actions .primary{font-size:.8rem}}
+:root{--brand2:color-mix(in srgb,var(--brand) 13%,var(--panel))}
+.brand-icon{background:var(--brand)}.stat-icon{background:var(--brand2)}
+.pro{font-size:.62rem;background:var(--brand);color:#fff;border-radius:6px;padding:2px 6px;align-self:center}
+.thumb{width:100%;height:96px;object-fit:cover;border-radius:12px;background:#fff;border:1px solid #0000000f}
+.tags{display:flex;gap:5px;flex-wrap:wrap}.tags i{font-style:normal;font-size:.7rem;background:#ffffffa6;color:#4d4468;padding:3px 8px;border-radius:999px}
+#tagRow[hidden]{display:none}#wc{margin:-4px 0 10px}
+.swatches{display:inline-flex;gap:6px;align-items:center}.sw{width:24px;height:24px;border-radius:50%;border:2px solid var(--panel);box-shadow:0 0 0 1px var(--line);padding:0}.sw[aria-pressed=true]{box-shadow:0 0 0 2px var(--ink)}
+[data-theme=dark]{--bg:#14121f;--panel:#1e1b2e;--ink:#ece9fb;--muted:#9f9bb7;--line:#2f2b47;--shadow:0 14px 36px #0006;color-scheme:dark}
+[data-theme=dark] :is(.sidebar,.stat,.icon-btn,.secondary,.search input,.filters button,.empty,.modal,.canvas-wrap,.canvas-tools button){background:var(--panel);color:var(--ink)}
+[data-theme=dark] :is(.field,.canvas-top,.close){background:var(--bg);color:var(--ink)}
+[data-theme=dark] .mobile-nav{background:#1e1b2eed}
+[data-theme=dark] :is(.offline-card,.notice){background:var(--brand2);border-color:var(--line);color:var(--ink)}
+[data-theme=dark] .offline-card strong{color:var(--ink)}
+[data-theme=dark] :is(.nav button,.side-label,.mobile-nav button){color:var(--muted)}
+[data-theme=dark] :is(.nav button.active,.nav button:hover,.filters button.active,.canvas-tools button.active,.mobile-nav button.active){color:color-mix(in srgb,var(--brand) 50%,#fff)}
+[data-theme=dark] .note{color:#252238;filter:brightness(.9)}[data-theme=dark] .toast{background:#ece9fb;color:#14121f}
+#lock{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:18px}#lock[hidden]{display:none}
+.canvas{height:clamp(260px,52dvh,560px);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.modal{overscroll-behavior:contain}html{-webkit-text-size-adjust:100%}
+@media(pointer:coarse){.field,.search input,select{font-size:16px}.secondary,.primary,.close,.icon-btn,.filters button,.canvas-tools button{min-height:44px}.sw{width:30px;height:30px}.nav button{padding:14px 13px}}
+@media(min-width:721px) and (max-width:1050px){.app{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:20px 10px;align-items:center}.sidebar .side-label,.brand>span,.pro,.offline-card,.profile-info{display:none}.nav button{font-size:0;justify-content:center;padding:13px}.nav .glyph{font-size:20px}.brand{padding:0}.profile{padding:6px;justify-content:center}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){main{padding-left:max(15px,env(safe-area-inset-left));padding-right:max(15px,env(safe-area-inset-right))}.mobile-nav button{min-width:52px;padding:5px 8px}}
+@media(max-height:520px){.canvas{height:62dvh}}
+.canvas{background-color:#fffdf6;background-image:linear-gradient(90deg,#0000 55px,#e9a0a0 55px 56px,#0000 56px),repeating-linear-gradient(#0000 0 31px,#b8c9e6 31px 32px);background-size:auto}
+.cl{display:grid;gap:3px}.ck{font-size:.82rem;display:flex;gap:8px;align-items:flex-start;line-height:1.35;cursor:pointer;padding:2px 0;overflow-wrap:anywhere}
+.ck:before{content:"";flex:none;width:15px;height:15px;margin-top:1px;border:2px solid #6b6585;border-radius:5px;box-sizing:border-box}
+.ck.on{text-decoration:line-through;opacity:.6}.ck.on:before{content:"✓";background:var(--brand);border-color:var(--brand);color:#fff;font-size:10px;display:grid;place-items:center;line-height:1}
+.bar{height:5px;border-radius:9px;background:#0000001a;overflow:hidden}.bar i{display:block;height:100%;background:var(--brand)}.note small{font-size:.72rem;color:#79748a}
+@media(pointer:coarse){.ck{padding:6px 0}}
+.grid.list{grid-template-columns:1fr}.grid.list .note{min-height:0}
+#cmd{position:fixed;inset:0;z-index:60;background:#17122b7a;display:flex;align-items:flex-start;justify-content:center;padding:12vh 14px 14px}#cmd[hidden]{display:none}
+#cmdList{max-height:50dvh;overflow:auto;display:grid;gap:2px}#cmdList button{border:0;background:transparent;color:inherit;text-align:left;padding:11px 12px;border-radius:11px;display:flex;justify-content:space-between;gap:10px}#cmdList button.sel,#cmdList button:hover{background:var(--brand2)}#cmdList small{color:var(--muted)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-icon">✎</div><span>FreeNotes <span style="color:#8b81d9">Studio</span></span><b class="pro">Pro</b></div>
+  <div><div class="side-label">Workspace</div><nav class="nav">
+    <button class="active" data-filter="all"><span class="glyph">▦</span> All notes</button>
+    <button data-filter="pinned"><span class="glyph">♧</span> Pinned</button>
+    <button data-filter="recent"><span class="glyph">◷</span> Recent</button>
+    <button data-filter="trash"><span class="glyph">⌫</span> Trash</button>
+    <button id="openSketch"><span class="glyph">✎</span> Sketch pad</button>
+  </nav></div>
+  <div><div class="side-label">Your space</div><nav class="nav">
+    <button id="accountSide"><span class="glyph">◎</span> Account & sync</button>
+    <button id="settingsSide"><span class="glyph">⚙</span> Settings</button>
+  </nav></div>
+  <div class="side-bottom">
+    <div class="offline-card"><strong>✦ Offline ready</strong>Your notes save on this device. Connect an account to sync between devices.</div>
+    <div class="profile"><div class="avatar" id="avatar">G</div><div class="profile-info"><strong id="profileName">Guest mode</strong><small id="profileEmail">Only on this device</small></div></div>
+  </div>
+</aside>
+<main>
+  <div class="topbar">
+    <div class="mobile-brand"><div class="brand-icon">✎</div> FreeNotes Studio</div>
+    <div class="statusline"><span class="dot"></span><span id="onlineLabel">Local saving on</span></div>
+    <div class="top-actions"><button class="icon-btn" id="cmdBtn" title="Command palette (Ctrl+K)" aria-label="Command palette">⌘</button><button class="icon-btn" id="exportBtn" title="Export backup" aria-label="Export backup">↥</button><button class="icon-btn" id="accountBtn" title="Account" aria-label="Account">◎</button><button class="primary" id="newBtn">＋ New note</button></div>
+  </div>
+  <section class="hero">
+    <div><div class="eyebrow">Your ideas, in one place</div><h1>Make room for<br>your next big idea.</h1><p>Capture thoughts, sketch freely, and keep moving.</p></div>
+    <div class="hero-art"><span class="spark">✦</span></div>
+  </section>
+  <section class="stats">
+    <div class="stat"><div class="stat-top">Total notes <span class="stat-icon">▤</span></div><strong id="statTotal">0</strong></div>
+    <div class="stat"><div class="stat-top">Pinned <span class="stat-icon">♧</span></div><strong id="statPinned">0</strong></div>
+    <div class="stat"><div class="stat-top">Sketches <span class="stat-icon">✎</span></div><strong id="statSketch">0</strong></div>
+  </section>
+  <div class="section-head"><h2 id="listHeading">All notes</h2><div class="search"><span>⌕</span><input id="search" type="search" placeholder="Search notes…" aria-label="Search notes"></div></div>
+  <div class="filters"><button class="active" data-filter="all">All notes</button><button data-filter="pinned">♧ Pinned</button><button data-filter="recent">◷ Recent</button><button data-filter="trash">⌫ Trash</button></div>
+  <div class="filters" id="tagRow" hidden></div>
+  <section class="grid" id="notesGrid"></section>
+</main>
+</div>
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <button class="active" data-filter="all"><b>▦</b>Notes</button>
+  <button data-filter="pinned"><b>♧</b>Pinned</button>
+  <button id="mobileSketch"><b>✎</b>Sketch</button>
+  <button id="mobileAccount"><b>◎</b>Account</button><button id="mobileSettings"><b>⚙</b>Settings</button>
+</nav>
+<button class="fab" id="fab"><span>＋</span> New note</button>
+
+<div class="overlay" id="noteOverlay" role="dialog" aria-modal="true" aria-labelledby="noteModalTitle">
+<section class="modal">
+  <div class="modal-head"><h2 id="noteModalTitle">Create a note</h2><button class="close" data-close="noteOverlay" aria-label="Close">×</button></div>
+  <input class="field" id="editTitle" maxlength="140" placeholder="Give your note a title">
+  <textarea class="field" id="editBody" placeholder="Start writing something wonderful…"></textarea>
+  <input class="field" id="editTags" placeholder="Tags, separated by commas">
+  <div class="statusline" id="wc"></div>
+  <div class="toolrow"><label>Card color <input id="editColor" type="color" value="#fff0c2"></label><label><input type="checkbox" id="editPinned"> Pin to top</label><button class="secondary" id="attachSketch">✎ Add sketch</button><button class="secondary" id="exportMd">↧ Export .md</button><button class="secondary" id="addCheck">☑ Checklist</button><button class="secondary" id="shareNote">⇪ Share</button></div>
+  <div class="editor-actions"><button class="danger" id="deleteNote" hidden>Move to trash</button><div class="editor-actions-right"><button class="secondary" id="restoreNote" hidden>Restore</button><button class="secondary" data-close="noteOverlay">Cancel</button><button class="primary" id="saveNote">Save note</button></div></div>
+</section></div>
+
+<div class="overlay" id="sketchOverlay" role="dialog" aria-modal="true" aria-labelledby="sketchTitle">
+<section class="modal wide">
+  <div class="modal-head"><div><h2 id="sketchTitle">Sketch pad</h2><div class="statusline" style="margin-top:5px">Draw with your finger, mouse, or compatible stylus.</div></div><button class="close" data-close="sketchOverlay" aria-label="Close">×</button></div>
+  <div class="canvas-wrap"><div class="canvas-top"><div class="canvas-tools"><button id="penTool" class="active">✎ Pen</button><button id="eraserTool">⌫ Eraser</button><input type="color" id="penColor" value="#6554d9" aria-label="Pen color"><span class="swatches" id="penSw"></span><label style="font-size:.78rem;color:#777">Size <input type="range" id="penSize" min="1" max="18" value="4"></label></div><div class="canvas-tools"><button id="undoStroke">↶ Undo</button><button id="redoStroke">↷ Redo</button><button id="dlSketch">⤓ PNG</button><button id="palmBtn"></button><button id="clearCanvas">Clear</button></div></div><canvas class="canvas" id="drawingCanvas" aria-label="Drawing canvas"></canvas></div>
+  <div class="toolrow" style="justify-content:space-between;margin-top:12px"><span class="statusline" id="penStatus">Touch/mouse ready · stylus detected automatically when supported</span><div class="editor-actions-right"><button class="secondary" data-close="sketchOverlay">Cancel</button><button class="primary" id="saveSketch">Save sketch as note</button></div></div>
+</section></div>
+
+<div class="overlay" id="accountOverlay" role="dialog" aria-modal="true" aria-labelledby="accountTitle">
+<section class="modal">
+  <div class="modal-head"><div><h2 id="accountTitle">Account & cloud sync</h2><div class="statusline" style="margin-top:5px">Use your account on more than one device.</div></div><button class="close" data-close="accountOverlay" aria-label="Close">×</button></div>
+  <div id="accountSignedOut">
+    <div class="notice">Guest mode works offline. Sign in to sync your notes between devices. Your notes are not sent anywhere until you sign in.</div>
+    <div class="form-grid"><input class="field" id="authEmail" type="email" autocomplete="email" placeholder="Email address"><input class="field" id="authPassword" type="password" autocomplete="current-password" placeholder="Password (6+ characters)"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="primary" id="signInBtn">Sign in</button><button class="secondary" id="signUpBtn">Create account</button></div>
+    <p class="small-muted">Account sign-up and cloud sync require internet. Some Supabase projects require email confirmation.</p>
+  </div>
+  <div id="accountSignedIn" hidden>
+    <div class="profile" style="margin-bottom:14px"><div class="avatar" id="accountAvatar">U</div><div class="profile-info"><strong id="signedEmail">Signed in</strong><small>Supabase account</small></div></div>
+    <div class="notice" id="syncNotice">Cloud sync status will appear here.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="primary" id="syncNow">↻ Sync notes now</button><button class="secondary" id="signOutBtn">Sign out</button></div>
+  </div>
+</section></div>
+
+<div class="overlay" id="settingsOverlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+<section class="modal">
+  <div class="modal-head"><h2 id="settingsTitle">Settings & pen support</h2><button class="close" data-close="settingsOverlay" aria-label="Close">×</button></div>
+  <h3 style="font-size:.95rem;margin:6px 0 8px">Install on your device</h3>
+  <p class="small-muted" id="installHelp"></p><div style="margin-bottom:18px"><button class="primary" id="installBtn" hidden>Install app</button></div>
+  <h3 style="font-size:.95rem;margin:6px 0 8px">Appearance</h3>
+  <div class="toolrow" style="margin-bottom:18px"><label>Theme <select id="themeSel" class="field" style="width:auto;margin:0"><option value="auto">Match device</option><option value="light">Light</option><option value="dark">Dark</option></select></label><label>Accent <span class="swatches" id="accSw"></span></label></div>
+  <h3 style="font-size:.95rem;margin:6px 0 8px">App lock</h3>
+  <p class="small-muted">Hides your notes behind a PIN on this device. It does not encrypt the stored notes.</p>
+  <div class="toolrow" style="margin-bottom:18px"><input class="field" id="pinIn" type="password" inputmode="numeric" maxlength="8" placeholder="4 to 8 digits" style="width:150px;margin:0"><button class="primary" id="pinSet">Set PIN</button><button class="secondary" id="pinOff" hidden>Turn off</button></div>
+  <h3 style="font-size:.95rem;margin:6px 0 8px">Stylus / Bluetooth pen</h3>
+  <div class="notice">Drawing supports Pointer Events, including compatible Apple Pencil and active styluses. Pressure sensitivity is used when the browser exposes it. Websites cannot universally detect every Bluetooth pen by its Bluetooth connection: iPadOS Safari does not support Web Bluetooth, and many pens communicate directly with the tablet instead of exposing a browser-visible Bluetooth service.</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" id="checkPen">Check stylus input</button><button class="secondary" id="bluetoothBtn">Try Bluetooth device picker</button></div>
+  <p class="small-muted" id="penHelp" style="line-height:1.5">Tip: open Sketch pad and draw with your pen. If the browser reports the input as a pen, the status will update. Bluetooth pairing alone cannot guarantee stylus support.</p>
+  <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+  <h3 style="font-size:.95rem;margin:6px 0 8px">Data & backup</h3>
+  <p class="small-muted">Notes save to this browser first. Export a JSON backup regularly. Browser storage may be erased if you clear site data.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="secondary" id="exportSettings">Export backup</button><button class="secondary" id="importSettings">Import backup</button><input type="file" id="importInput" accept=".json,application/json" hidden></div>
+</section></div>
+<div id="lock" hidden><div class="modal" style="width:min(320px,92%);text-align:center"><div class="brand-icon" style="margin:0 auto 12px;color:#fff">✎</div><h2 style="margin:0 0 12px;font-size:1.1rem">Enter your PIN</h2><input class="field" id="lockIn" type="password" inputmode="numeric" maxlength="8" autocomplete="off" aria-label="PIN" style="text-align:center"><div class="statusline" id="lockMsg" style="justify-content:center;min-height:20px"></div><button class="primary" id="lockGo" style="width:100%;margin-top:6px">Unlock</button></div></div>
+<div id="cmd" hidden><div class="modal" style="width:min(560px,100%);padding:12px"><input class="field" id="cmdIn" placeholder="Type a command or search notes…" autocomplete="off" aria-label="Command palette" style="margin-bottom:6px"><div id="cmdList"></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+/* ===== SUPABASE: paste your two values between the quotes ===== */
+const SUPABASE_URL='https://nulvujgqveybztlbthza.supabase.co/rest/v1/';
+const SUPABASE_KEY='sb_publishable_b87QCWjwN_SDzqNPC7S6Ew_UJ4R1Jc7';
+/* ============================================================= */
+(() => {
+const $=id=>document.getElementById(id), KEY='freenotes-studio-v2', CONFIG='freenotes-supabase-config-v1';
+let tagF='', notes=[], filter='all', editingId=null, strokes=[], redoStack=[], drawing=false, currentStroke=null, activeTool='pen', currentUser=null, supabase=null, toastTimer, lastPointer='touch/mouse';
+try{notes=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(notes))notes=[]}catch{notes=[]}
+const palette=['#fff0c2','#e2f5e9','#e4edff','#ffe5f0','#f0e8ff','#fff'];
+const saveLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(notes))}catch{toast('Storage is full. Export a backup.')}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dateLabel=t=>new Date(t||Date.now()).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2400)}
+function show(id){$(id).classList.add('show');document.body.style.overflow='hidden'}
+function hide(id){$(id).classList.remove('show');if(!document.querySelector('.overlay.show'))document.body.style.overflow=''}
+function setFilter(f){filter=f;render();document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f))}
+function render(){
+ const q=$('search').value.trim().toLowerCase();let arr=notes.filter(n=>!!n.trashed===(filter==='trash')&&(!tagF||(n.tags||[]).includes(tagF))&&(n.title+' '+n.body+' '+(n.tags||[]).join(' ')).toLowerCase().includes(q));
+ if(filter==='pinned')arr=arr.filter(n=>n.pinned);if(filter==='recent')arr.sort((a,b)=>b.updated-a.updated);else arr.sort((a,b)=>(Number(b.pinned)-Number(a.pinned))||b.updated-a.updated);
+ $('listHeading').textContent=filter==='trash'?'Trash':filter==='pinned'?'Pinned notes':filter==='recent'?'Recent notes':'All notes';
+ {const a=notes.filter(n=>!n.trashed);$('statTotal').textContent=a.length;$('statPinned').textContent=a.filter(n=>n.pinned).length;$('statSketch').textContent=a.filter(n=>n.drawing).length}
+ const grid=$('notesGrid');if(!arr.length){grid.innerHTML=`<div class="empty"><div class="emoji">${q?'🔎':'✦'}</div><h3>${q?'No notes found':filter==='pinned'?'Nothing pinned yet':filter==='trash'?'Trash is empty':'Your ideas start here'}</h3><p>${q?'Try a different search term.':'Create a note or sketch to get started.'}</p></div>`;return}
+ grid.innerHTML=arr.map(n=>`<button class="note" data-id="${esc(n.id)}" style="background:${/^#[0-9a-f]{6}$/i.test(n.color)?n.color:'#fff'}"><span class="pin">${n.pinned?'📌':''}</span><h3>${esc(n.title||'Untitled note')}</h3>${/^data:image\//.test(n.drawing||'')?`<img class="thumb" alt="Sketch preview" src="${n.drawing}">`:''}${bodyHtml(n)}${(n.tags||[]).length?`<div class="tags">${n.tags.map(t=>`<i>#${esc(t)}</i>`).join('')}</div>`:''}<div class="note-meta"><span>${dateLabel(n.updated)}</span><span>Open ↗</span></div></button>`).join('');
+ grid.querySelectorAll('[data-id]').forEach(el=>el.addEventListener('click',()=>openNote(el.dataset.id)));
+}
+function openNote(id=null){editingId=id;const n=notes.find(x=>x.id===id);$('noteModalTitle').textContent=n?'Edit note':'Create a note';$('editTitle').value=n?.title||'';$('editBody').value=n?.body||'';$('editColor').value=n?.color||palette[Math.floor(Math.random()*palette.length)];$('editPinned').checked=!!n?.pinned;$('editTags').value=(n?.tags||[]).join(', ');window.pendingDrawing=null;$('restoreNote').hidden=!n?.trashed;$('deleteNote').textContent=n?.trashed?'Delete forever':'Move to trash';wc();$('deleteNote').hidden=!n;show('noteOverlay')}
+function saveNote(){
+ const title=$('editTitle').value.trim(),body=$('editBody').value.trim();if(!title&&!body&&!window.pendingDrawing){toast('Add a title, some text, or a sketch first.');return}
+ const now=Date.now(), old=notes.find(n=>n.id===editingId);
+ const n={...(old||{}),id:editingId||((crypto.randomUUID&&crypto.randomUUID())||String(now+Math.random())),title,body,color:$('editColor').value,pinned:$('editPinned').checked,tags:parseTags($('editTags').value),updated:now,created:old?.created||now,drawing:window.pendingDrawing||old?.drawing||null};
+ if(editingId){notes=notes.map(x=>x.id===editingId?n:x)}else notes.unshift(n);window.pendingDrawing=null;saveLocal();render();hide('noteOverlay');toast('Saved on this device ✓');queueSync()
+}
+function deleteNote(){const n=notes.find(x=>x.id===editingId);if(!n)return;if(n.trashed){if(!confirm('Delete this note forever?'))return;notes=notes.filter(x=>x!==n);toast('Deleted forever')}else{n.trashed=Date.now();n.updated=Date.now();toast('Moved to trash. Kept for 30 days.')}saveLocal();render();hide('noteOverlay');queueSync()}
+$('newBtn').onclick=$('fab').onclick=()=>openNote();$('saveNote').onclick=saveNote;$('deleteNote').onclick=deleteNote;
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>hide(b.dataset.close)));
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)hide(o.id)}));
+document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>setFilter(b.dataset.filter)));
+$('search').addEventListener('input',render);
+$('openSketch').onclick=$('mobileSketch').onclick=()=>openSketch();$('attachSketch').onclick=()=>{hide('noteOverlay');openSketch(true)};
+$('accountBtn').onclick=$('accountSide').onclick=$('mobileAccount').onclick=()=>{updateAccountUI();show('accountOverlay')};
+$('settingsSide').onclick=()=>{loadConfigFields();show('settingsOverlay')};
+
+const canvas=$('drawingCanvas'),ctx=canvas.getContext('2d');let canvasReady=false;
+function resizeCanvas(preserve=true){
+ let old=null;if(preserve&&canvas.width&&canvas.height)old=canvas.toDataURL();
+ const rect=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+ canvas.width=Math.max(1,Math.round(rect.width*dpr));canvas.height=Math.max(1,Math.round(rect.height*dpr));
+ ctx.setTransform(dpr,0,0,dpr,0,0);ctx.lineCap='round';ctx.lineJoin='round';
+ if(old){const im=new Image();im.onload=()=>{ctx.drawImage(im,0,0,rect.width,rect.height)};im.src=old}
+}
+function drawStroke(s){if(!s||!s.points?.length)return;ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=s.tool==='eraser'?'#ffffff':s.color;ctx.lineWidth=s.size;ctx.beginPath();s.points.forEach((p,i)=>{if(i===0)ctx.moveTo(p.x,p.y);else{const prev=s.points[i-1];ctx.lineWidth=s.size*(.5+Math.max(.2,p.pressure||.5));ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y)}});ctx.restore()}
+function redrawCanvas(){const rect=canvas.getBoundingClientRect();ctx.clearRect(0,0,rect.width,rect.height);strokes.forEach(drawStroke)}
+function openSketch(fromNote=false){window.sketchFromNote=fromNote;strokes=[];redoStack=[];canvasReady=false;show('sketchOverlay');setTimeout(()=>{resizeCanvas(false);canvasReady=true;const s=$('penStatus');s.textContent='Touch/mouse ready · use your stylus to draw';},80)}
+function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top,pressure:e.pressure||.5}}
+canvas.addEventListener('legacy-down',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);drawing=true;lastPointer=e.pointerType||'unknown';$('penStatus').textContent=(lastPointer==='pen'?'✦ Stylus input detected':'Input: '+lastPointer)+' · pressure '+(e.pressure>0?Math.round(e.pressure*100)+'%':'not reported');currentStroke={tool:activeTool,color:$('penColor').value,size:Number($('penSize').value),points:[point(e)]};strokes.push(currentStroke);redoStack=[];drawStroke(currentStroke)});
+canvas.addEventListener('legacy-move',e=>{if(!drawing||!currentStroke)return;e.preventDefault();const p=point(e);currentStroke.points.push(p);drawStroke(currentStroke);if(e.pointerType==='pen')$('penStatus').textContent='✦ Stylus detected · pressure '+Math.round((e.pressure||0)*100)+'%'});
+function endDraw(){drawing=false;currentStroke=null}
+$('penTool').onclick=()=>{activeTool='pen';$('penTool').classList.add('active');$('eraserTool').classList.remove('active')};
+$('eraserTool').onclick=()=>{activeTool='eraser';$('eraserTool').classList.add('active');$('penTool').classList.remove('active')};
+$('undoStroke').onclick=()=>{if(strokes.length){redoStack.push(strokes.pop());redrawCanvas()}};
+$('clearCanvas').onclick=()=>{if(confirm('Clear the whole sketch?')){strokes=[];redoStack=[];redrawCanvas()}};
+$('saveSketch').onclick=()=>{
+ if(!strokes.length){toast('Draw something first.');return}
+ const rect=canvas.getBoundingClientRect(),out=document.createElement('canvas');out.width=canvas.width;out.height=canvas.height;const octx=out.getContext('2d');paperFill(octx,out.width,out.height);octx.drawImage(canvas,0,0);
+ window.pendingDrawing=out.toDataURL('image/png');
+ hide('sketchOverlay');
+ if(window.sketchFromNote){show('noteOverlay');toast('Sketch attached to your note. Save the note to keep it.')}
+ else{editingId=null;$('noteModalTitle').textContent='Save sketch';$('editTitle').value='My sketch';$('editBody').value='';$('editColor').value='#f0e8ff';$('editPinned').checked=false;$('editTags').value='';$('restoreNote').hidden=true;wc();$('deleteNote').hidden=true;show('noteOverlay')}
+};
+$('checkPen').onclick=()=>{$('penHelp').textContent='Ready to test: open Sketch pad and draw with your stylus. The canvas reads pointerType and pressure when the browser exposes them. Last input: '+lastPointer+'.';toast('Open Sketch pad to test your pen.')};
+$('bluetoothBtn').onclick=async()=>{
+ if(!navigator.bluetooth){$('penHelp').textContent='Web Bluetooth is not available in this browser/device. iPadOS Safari does not support Web Bluetooth. You can still draw with a compatible stylus through touch/pointer input.';toast('Bluetooth device picker is not supported here.');return}
+ try{const device=await navigator.bluetooth.requestDevice({acceptAllDevices:true});$('penHelp').textContent='Bluetooth device selected: '+(device.name||'Unnamed device')+'. This confirms pairing visibility only; it does not guarantee the browser can access stylus events.';toast('Device selected')}
+ catch(e){$('penHelp').textContent=e.name==='NotFoundError'?'No device selected. Many pens do not appear as browser-accessible Bluetooth devices.':'Bluetooth picker closed or unavailable. Try a supported browser over HTTPS.'}
+};
+
+function loadConfig(){return SUPABASE_URL.startsWith('https://')&&SUPABASE_KEY.length>20&&!SUPABASE_KEY.includes('PASTE')?{url:SUPABASE_URL,key:SUPABASE_KEY}:{}}
+function loadConfigFields(){}
+function initSupabase(){
+ const c=loadConfig();if(!c.url||!c.key||!window.supabase?.createClient){supabase=null;return false}
+ try{supabase=window.supabase.createClient(c.url,c.key);return true}catch{supabase=null;return false}
+}
+function updateAccountUI(){const signed=!!currentUser;$('accountSignedOut').hidden=signed;$('accountSignedIn').hidden=!signed;if(signed){$('signedEmail').textContent=currentUser.email||'Signed in';$('accountAvatar').textContent=(currentUser.email||'U')[0].toUpperCase();$('profileName').textContent=currentUser.email||'Account';$('profileEmail').textContent='Cloud account';$('avatar').textContent=(currentUser.email||'U')[0].toUpperCase()}else{$('profileName').textContent='Guest mode';$('profileEmail').textContent='Only on this device';$('avatar').textContent='G'}}
+async function signIn(mode){
+ if(!initSupabase()){toast('Cloud sync is not set up in this build.');return}
+ const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||password.length<6){toast('Enter your email and a password with 6+ characters.');return}
+ try{let result=mode==='signup'?await supabase.auth.signUp({email,password}):await supabase.auth.signInWithPassword({email,password});if(result.error)throw result.error;
+ if(mode==='signup'&&!result.data.session){toast('Account created. Check your email to confirm, then sign in.');return}
+ currentUser=result.data.user;updateAccountUI();toast(mode==='signup'?'Account created!':'Signed in ✓');await syncNotes();updateAccountUI()
+ }catch(e){toast(e.message||'Authentication failed')}
+}
+$('signInBtn').onclick=()=>signIn('signin');$('signUpBtn').onclick=()=>signIn('signup');
+$('signOutBtn').onclick=async()=>{if(supabase)await supabase.auth.signOut();currentUser=null;updateAccountUI();toast('Signed out. Local notes remain on this device.')};
+async function syncNotes(){
+ if(!supabase||!currentUser){toast('Sign in to sync notes.');return}
+ $('syncNotice').textContent='Syncing…';
+ try{
+  const rows=notes.filter(n=>!n.trashed).map(n=>({id:n.id,user_id:currentUser.id,title:n.title,body:n.body,color:n.color,pinned:n.pinned,created_at:new Date(n.created||Date.now()).toISOString(),updated_at:new Date(n.updated||Date.now()).toISOString(),drawing:n.drawing||null,tags:(n.tags||[]).join(',')}));
+  if(rows.length){const {error}=await supabase.from('notes').upsert(rows,{onConflict:'id'});if(error)throw error}
+  const {data,error}=await supabase.from('notes').select('*').eq('user_id',currentUser.id).order('updated_at',{ascending:false});if(error)throw error;
+  const remote=(data||[]).map(r=>({id:r.id,title:r.title||'',body:r.body||'',color:r.color||'#fff',pinned:!!r.pinned,created:Date.parse(r.created_at)||Date.now(),updated:Date.parse(r.updated_at)||Date.now(),drawing:r.drawing||null,tags:r.tags?String(r.tags).split(',').filter(Boolean):[]}));
+  const map=new Map(notes.map(n=>[n.id,n]));remote.forEach(r=>{const local=map.get(r.id);if(!local||r.updated>local.updated)map.set(r.id,r)});notes=[...map.values()];saveLocal();render();$('syncNotice').textContent='Sync complete. '+remote.length+' cloud note(s) loaded. If the same note was edited on both devices, the most recently updated version is kept.';toast('Notes synced ✓')
+ }catch(e){$('syncNotice').textContent='Sync failed: '+e.message+' — check the SQL setup and Supabase Row Level Security policies.';toast('Sync failed. Check setup and internet.')}
+}
+function queueSync(){if(currentUser&&navigator.onLine&&supabase)setTimeout(()=>syncNotes(),500)}
+$('syncNow').onclick=syncNotes;
+initSupabase();
+if(supabase){supabase.auth.getSession().then(({data})=>{currentUser=data.session?.user||null;updateAccountUI()});supabase.auth.onAuthStateChange((_event,session)=>{currentUser=session?.user||null;updateAccountUI()})}
+function exportNotes(){const blob=new Blob([JSON.stringify({app:'FreeNotes Studio',version:2,exportedAt:new Date().toISOString(),notes},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='freenotes-studio-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Backup exported')}
+$('exportBtn').onclick=$('exportSettings').onclick=exportNotes;
+$('importSettings').onclick=()=>$('importInput').click();
+$('importInput').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const d=JSON.parse(await f.text()),arr=Array.isArray(d)?d:d.notes;if(!Array.isArray(arr))throw Error();if(confirm(`Add ${arr.length} note(s) from backup?`)){notes=[...arr.filter(n=>n&&typeof n==='object').map(n=>({...n,id:String(n.id||Date.now()+Math.random()),title:String(n.title||''),body:String(n.body||''),color:/^#[0-9a-f]{6}$/i.test(n.color)?n.color:'#fff',pinned:!!n.pinned,created:Number(n.created)||Date.now(),updated:Number(n.updated)||Date.now()})),...notes];saveLocal();render();toast('Backup imported ✓')}}catch{toast('Could not read that backup file.')}finally{e.target.value=''}};
+window.addEventListener('online',()=>{$('onlineLabel').textContent='Online · local saving on';queueSync()});window.addEventListener('offline',()=>{$('onlineLabel').textContent='Offline · local saving on'});
+$('onlineLabel').textContent=navigator.onLine?'Online · local saving on':'Offline · local saving on';
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.show').forEach(o=>hide(o.id));if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&$('noteOverlay').classList.contains('show'))saveNote()});
+window.addEventListener('resize',()=>{if($('sketchOverlay').classList.contains('show'))resizeCanvas(true)});
+const PRO='freenotes-pro-v1',ACC=['#6554d9','#0b8374','#c93a6e','#b45309','#2f6fe0'],PEN=['#6554d9','#252238','#c93a6e','#0b8374','#2f6fe0','#b45309'];
+let pro={theme:'auto',accent:ACC[0],penMode:'auto',penSeen:false};try{Object.assign(pro,JSON.parse(localStorage.getItem(PRO)||'{}'))}catch{}
+const mq=matchMedia('(prefers-color-scheme: dark)');
+function sw(id,list,cur,fn){$(id).innerHTML=list.map(c=>`<button class="sw" style="background:${c}" data-c="${c}" aria-label="Color ${c}" aria-pressed="${c===cur()}"></button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{fn(b.dataset.c);sw(id,list,cur,fn)})}
+function applyPro(){const d=pro.theme==='dark'||(pro.theme==='auto'&&mq.matches);document.documentElement.dataset.theme=d?'dark':'light';document.documentElement.style.setProperty('--brand',pro.accent);document.querySelector('meta[name=theme-color]').content=d?'#14121f':pro.accent;try{localStorage.setItem(PRO,JSON.stringify(pro))}catch{}}
+$('themeSel').value=pro.theme;$('themeSel').onchange=e=>{pro.theme=e.target.value;applyPro()};mq.addEventListener('change',applyPro);
+sw('accSw',ACC,()=>pro.accent,c=>{pro.accent=c;applyPro()});
+sw('penSw',PEN,()=>$('penColor').value,c=>{$('penColor').value=c;$('penTool').click()});
+applyPro();
+function parseTags(s){return [...new Set(String(s).split(',').map(t=>t.trim().replace(/^#/,'').toLowerCase().replace(/\s+/g,'-')).filter(Boolean))].slice(0,8)}
+function wc(){const v=$('editBody').value.trim();$('wc').textContent=(v?v.split(/\s+/).length:0)+' words · '+$('editBody').value.length+' characters'}
+$('editBody').addEventListener('input',wc);
+function tagRow(){const all=[...new Set(notes.filter(n=>!n.trashed).flatMap(n=>n.tags||[]))].sort(),r=$('tagRow');r.hidden=!all.length;r.innerHTML=all.map(t=>`<button class="${t===tagF?'active':''}" data-tag="${esc(t)}">#${esc(t)}</button>`).join('');r.querySelectorAll('button').forEach(b=>b.onclick=()=>{tagF=tagF===b.dataset.tag?'':b.dataset.tag;render()})}
+const _render=render;render=function(){_render();tagRow()};
+function dl(b,name){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$('exportMd').onclick=()=>{const t=$('editTitle').value.trim()||'note',o=notes.find(x=>x.id===editingId),g=parseTags($('editTags').value),img=window.pendingDrawing||o?.drawing;dl(new Blob(['# '+t+'\n\n'+(g.length?g.map(x=>'#'+x).join(' ')+'\n\n':'')+$('editBody').value+(img?'\n\n![sketch]('+img+')':'')],{type:'text/markdown'}),t.replace(/[^\w-]+/g,'-').slice(0,40)+'.md')};
+$('restoreNote').onclick=()=>{const n=notes.find(x=>x.id===editingId);if(!n)return;delete n.trashed;n.updated=Date.now();saveLocal();render();hide('noteOverlay');toast('Note restored');queueSync()};
+$('redoStroke').onclick=()=>{if(redoStack.length){strokes.push(redoStack.pop());redrawCanvas()}};
+$('dlSketch').onclick=()=>{if(!strokes.length){toast('Draw something first.');return}const o=document.createElement('canvas');o.width=canvas.width;o.height=canvas.height;const c=o.getContext('2d');paperFill(c,o.width,o.height);c.drawImage(canvas,0,0);o.toBlob(b=>dl(b,'sketch.png'))};
+document.addEventListener('keydown',e=>{if($('sketchOverlay').classList.contains('show')&&(e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();(e.shiftKey?$('redoStroke'):$('undoStroke')).click()}});
+{const cut=Date.now()-30*864e5;if(notes.some(n=>n.trashed&&n.trashed<cut)){notes=notes.filter(n=>!(n.trashed&&n.trashed<cut));saveLocal()}}
+
+/* ---- Stylus as a pen ---- */
+let activeId=null;
+function point(e){const r=canvas.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top,pressure:e.pointerType==='pen'?(e.pressure||.5):.5}}
+function seg(s,a,b){ctx.save();const er=s.tool==='eraser';ctx.globalCompositeOperation=er?'destination-out':'source-over';ctx.strokeStyle=s.color;ctx.lineCap=ctx.lineJoin='round';ctx.lineWidth=er?s.size*3:s.size*(.4+1.2*(b.pressure??.5));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore()}
+function drawStroke(s){if(!s||!s.points?.length)return;const p=s.points;if(p.length===1){seg(s,p[0],{x:p[0].x+.01,y:p[0].y,pressure:p[0].pressure});return}for(let i=1;i<p.length;i++)seg(s,p[i-1],p[i])}
+function penInfo(e){const t=e.pointerType,p=e.pressure>0?Math.round(e.pressure*100)+'%':'n/a';$('penStatus').textContent=t==='pen'?'✦ Stylus detected · pressure '+p+((e.tiltX||e.tiltY)?' · tilt '+Math.round(Math.hypot(e.tiltX,e.tiltY))+'°':''):t==='touch'?'Finger input':'Mouse input'}
+function seePen(e){if(e.pointerType==='pen'&&!pro.penSeen){pro.penSeen=true;applyPro();penInfo(e)}}
+const rejectTouch=e=>e.pointerType==='touch'&&(pro.penMode==='on'||(pro.penMode==='auto'&&pro.penSeen));
+canvas.addEventListener('pointerdown',e=>{seePen(e);if(rejectTouch(e)){e.preventDefault();$('penStatus').textContent='Touch ignored while palm guard is on';return}if(drawing)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);activeId=e.pointerId;drawing=true;lastPointer=e.pointerType||'unknown';const er=activeTool==='eraser'||e.button===5||(e.buttons&32)||(e.pointerType==='pen'&&(e.buttons&2));currentStroke={tool:er?'eraser':'pen',color:$('penColor').value,size:Number($('penSize').value),points:[point(e)]};strokes.push(currentStroke);redoStack=[];drawStroke(currentStroke);penInfo(e)});
+canvas.addEventListener('pointermove',e=>{seePen(e);if(!drawing||!currentStroke||e.pointerId!==activeId)return;e.preventDefault();const ev=e.getCoalescedEvents?e.getCoalescedEvents():[];for(const c of(ev.length?ev:[e])){const p=point(c),q=currentStroke.points[currentStroke.points.length-1];p.pressure=q.pressure*.5+p.pressure*.5;currentStroke.points.push(p);seg(currentStroke,q,p)}penInfo(e)});
+const endPen=e=>{if(e.pointerId===activeId){drawing=false;currentStroke=null;activeId=null}};
+canvas.addEventListener('pointerup',endPen);canvas.addEventListener('pointercancel',endPen);canvas.addEventListener('lostpointercapture',endPen);canvas.addEventListener('contextmenu',e=>e.preventDefault());
+const PM={auto:'✋ Palm guard: auto',on:'✋ Pen only',off:'✋ Pen + touch'},PT={auto:'Auto: touch is ignored once a stylus is detected.',on:'Pen only: touch will not draw.',off:'Pen and touch both draw.'};
+const palmUI=()=>{$('palmBtn').textContent=PM[pro.penMode]};
+$('palmBtn').onclick=()=>{pro.penMode={auto:'on',on:'off',off:'auto'}[pro.penMode];applyPro();palmUI();toast(PT[pro.penMode])};palmUI();
+/* ---- Phones and tablets ---- */
+$('mobileSettings').onclick=()=>{loadConfigFields();show('settingsOverlay')};
+let dip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;$('installBtn').hidden=false});
+$('installBtn').onclick=async()=>{if(!dip)return;dip.prompt();await dip.userChoice;dip=null;$('installBtn').hidden=true};
+addEventListener('appinstalled',()=>{$('installBtn').hidden=true;toast('App installed')});
+{const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),on=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+$('installHelp').textContent=on?'Installed. You are running it as an app.':ios?'On iPhone or iPad: tap Share, then Add to Home Screen.':'Use your browser menu to install, or tap Install app when it appears.'}
+setTimeout(()=>{const q=new URLSearchParams(location.search);if(q.has('new'))openNote();else if(q.has('sketch'))openSketch()},0);
+/* ---- App lock ---- */
+const LK='freenotes-lock-v1',lk=()=>{try{return JSON.parse(localStorage.getItem(LK)||'null')}catch{return null}};
+async function hp(p,s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s+':'+p));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function lockUI(){$('pinOff').hidden=!lk();$('pinSet').textContent=lk()?'Change PIN':'Set PIN'}
+function lockNow(){if(!lk()||!crypto.subtle)return;$('lock').hidden=false;$('lockIn').value='';$('lockMsg').textContent='';document.body.style.overflow='hidden';setTimeout(()=>$('lockIn').focus(),50)}
+$('pinSet').onclick=async()=>{const p=$('pinIn').value;if(!/^\d{4,8}$/.test(p)){toast('Use 4 to 8 digits.');return}if(!crypto.subtle){toast('PIN lock needs HTTPS or localhost.');return}const s=crypto.randomUUID();localStorage.setItem(LK,JSON.stringify({s,h:await hp(p,s)}));$('pinIn').value='';lockUI();toast('PIN lock is on')};
+$('pinOff').onclick=()=>{if(confirm('Turn off the PIN lock?')){localStorage.removeItem(LK);lockUI();toast('PIN lock is off')}};
+$('lockGo').onclick=async()=>{const l=lk();if(l&&await hp($('lockIn').value,l.s)===l.h){$('lock').hidden=true;document.body.style.overflow=document.querySelector('.overlay.show')?'hidden':''}else{$('lockMsg').textContent='Wrong PIN. Try again.';$('lockIn').value=''}};
+$('lockIn').addEventListener('keydown',e=>{if(e.key==='Enter')$('lockGo').click()});
+let hid=0;document.addEventListener('visibilitychange',()=>{if(document.hidden)hid=Date.now();else if(hid&&Date.now()-hid>30000)lockNow()});
+lockUI();lockNow();
+
+/* ---- Lined paper + AI handwriting ---- */
+try{localStorage.removeItem('freenotes-ai-key-v1')}catch{}
+function paperFill(c,w,h){const k=w/canvas.getBoundingClientRect().width,g=32*k;c.fillStyle='#fffdf6';c.fillRect(0,0,w,h);c.lineWidth=k;c.strokeStyle='#b8c9e6';c.beginPath();for(let y=g;y<h;y+=g){c.moveTo(0,y-k/2);c.lineTo(w,y-k/2)}c.stroke();c.strokeStyle='#e9a0a0';c.beginPath();c.moveTo(55.5*k,0);c.lineTo(55.5*k,h);c.stroke()}
+
+/* ---- Checklists ---- */
+function bodyHtml(n){const L=(n.body||'').split('\n'),it=[];L.forEach((l,i)=>{const m=l.match(/^\s*[-*] \[( |x)\] (.*)$/i);if(m)it.push({i,d:m[1]!==' ',t:m[2]})});
+ if(!it.length)return `<p>${esc(n.body||(n.drawing?'A saved sketch':'No additional text'))}</p>`;
+ const done=it.filter(x=>x.d).length,rest=L.filter((l,i)=>!it.some(x=>x.i===i)).join(' ').trim();
+ return(rest?`<p style="-webkit-line-clamp:2">${esc(rest)}</p>`:'')+`<div class="cl">${it.slice(0,5).map(x=>`<span class="ck${x.d?' on':''}" role="checkbox" aria-checked="${x.d}" data-ck="${esc(n.id)}" data-line="${x.i}">${esc(x.t)||'…'}</span>`).join('')}${it.length>5?`<small>+${it.length-5} more</small>`:''}</div><div class="bar"><i style="width:${Math.round(done/it.length*100)}%"></i></div><small>${done}/${it.length} done</small>`}
+$('notesGrid').addEventListener('click',e=>{const c=e.target.closest('[data-ck]');if(!c)return;e.stopPropagation();const n=notes.find(x=>x.id===c.dataset.ck);if(!n)return;const L=n.body.split('\n'),i=+c.dataset.line;L[i]=L[i].replace(/\[( |x)\]/i,m=>/x/i.test(m)?'[ ]':'[x]');n.body=L.join('\n');saveLocal();render();queueSync()},true);
+$('addCheck').onclick=()=>{const t=$('editBody'),s=t.selectionStart;t.setRangeText((s&&t.value[s-1]!=='\n'?'\n':'')+'- [ ] ',s,s,'end');t.focus();wc()};
+$('editBody').addEventListener('keydown',e=>{if(e.key!=='Enter'||e.shiftKey||e.isComposing)return;const t=e.target,s=t.selectionStart,ls=t.value.lastIndexOf('\n',s-1)+1,m=t.value.slice(ls,s).match(/^(\s*[-*] )\[( |x)\] (.*)$/i);if(!m)return;e.preventDefault();if(!m[3].trim())t.setRangeText('',ls,s,'end');else t.setRangeText('\n'+m[1]+'[ ] ',s,s,'end');wc()});
+$('shareNote').onclick=async()=>{const t=$('editTitle').value.trim()||'Note',b=$('editBody').value;try{if(navigator.share)await navigator.share({title:t,text:b});else{await navigator.clipboard.writeText(t+'\n\n'+b);toast('Note copied')}}catch{}};
+/* ---- Daily note, list view ---- */
+function dailyNote(){const t=new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}),o=notes.find(n=>!n.trashed&&(n.tags||[]).includes('daily')&&n.title===t);if(o){openNote(o.id);return}const now=Date.now(),n={id:(crypto.randomUUID&&crypto.randomUUID())||String(now),title:t,body:'Top 3 for today\n- [ ] \n- [ ] \n- [ ] \n\nNotes\n',color:'#e4edff',pinned:false,tags:['daily'],created:now,updated:now,drawing:null};notes.unshift(n);saveLocal();render();queueSync();openNote(n.id)}
+function toggleView(){pro.view=pro.view==='list'?'grid':'list';applyPro();$('notesGrid').classList.toggle('list',pro.view==='list');toast(pro.view==='list'?'List view':'Grid view')}
+$('notesGrid').classList.toggle('list',pro.view==='list');
+/* ---- Command palette ---- */
+const CMDS=()=>[['New note','N',()=>openNote()],['New sketch','',()=>openSketch()],['Daily note','',dailyNote],['Show all notes','',()=>setFilter('all')],['Show pinned','',()=>setFilter('pinned')],['Show trash','',()=>setFilter('trash')],['Toggle dark mode','',()=>{pro.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';$('themeSel').value=pro.theme;applyPro()}],['Switch list or grid view','',toggleView],['Settings','',()=>{loadConfigFields();show('settingsOverlay')}],['Account and sync','',()=>{updateAccountUI();show('accountOverlay')}],['Export backup','',exportNotes],['Lock app','',lockNow]];
+let cmdSel=0,cmdItems=[];
+function cmdRender(){const q=$('cmdIn').value.trim().toLowerCase();cmdItems=CMDS().filter(c=>!q||c[0].toLowerCase().includes(q)).map(c=>({l:c[0],h:c[1]||'Command',f:c[2]}));
+ if(q)notes.filter(n=>!n.trashed&&(n.title+' '+n.body).toLowerCase().includes(q)).slice(0,6).forEach(n=>cmdItems.push({l:n.title||'Untitled note',h:'Note',f:()=>openNote(n.id)}));
+ cmdSel=Math.min(cmdSel,Math.max(0,cmdItems.length-1));
+ $('cmdList').innerHTML=cmdItems.length?cmdItems.map((c,i)=>`<button data-i="${i}" class="${i===cmdSel?'sel':''}"><span>${esc(c.l)}</span><small>${esc(c.h)}</small></button>`).join(''):'<p class="small-muted" style="padding:10px">Nothing matches.</p>';
+ $('cmdList').querySelectorAll('button').forEach(b=>b.onclick=()=>cmdRun(+b.dataset.i))}
+function cmdRun(i){const c=cmdItems[i];if(!c)return;cmdClose();c.f()}
+function cmdOpen(){$('cmd').hidden=false;$('cmdIn').value='';cmdSel=0;cmdRender();$('cmdIn').focus()}
+function cmdClose(){$('cmd').hidden=true}
+$('cmdIn').addEventListener('input',()=>{cmdSel=0;cmdRender()});
+$('cmdIn').addEventListener('keydown',e=>{if(!cmdItems.length)return;if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();cmdSel=(cmdSel+(e.key==='ArrowDown'?1:-1)+cmdItems.length)%cmdItems.length;cmdRender()}else if(e.key==='Enter'){e.preventDefault();cmdRun(cmdSel)}});
+$('cmd').addEventListener('click',e=>{if(e.target===$('cmd'))cmdClose()});$('cmdBtn').onclick=cmdOpen;
+document.addEventListener('keydown',e=>{if(!$('lock').hidden)return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();cmdOpen();return}if(!$('cmd').hidden){if(e.key==='Escape')cmdClose();return}if(e.key==='n'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!document.querySelector('.overlay.show')){e.preventDefault();openNote()}});
+render();
+if('serviceWorker'in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+})();
+</script>
+</body></html>
